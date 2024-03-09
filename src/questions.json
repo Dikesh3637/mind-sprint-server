@@ -1,0 +1,32 @@
+[
+  {
+    "question": "In C programming, what is the purpose of the 'printf' function?",
+    "options": [
+      "To read input from the user",
+      "To display output on the screen",
+      "To perform mathematical calculations",
+      "To declare variables"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which of the following is a correct way to declare an integer variable in C?",
+    "options": [
+      "int num = 10.5;",
+      "integer num = 10;",
+      "int num;",
+      "num = 10;"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "What does the 'scanf' function do in C programming?",
+    "options": [
+      "Prints formatted output",
+      "Reads input from the user",
+      "Performs arithmetic operations",
+      "Declares variables"
+    ],
+    "answer": 1
+  }
+]

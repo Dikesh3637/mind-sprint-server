@@ -1,0 +1,97 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "id": "4ffc8f47-01d8-4d05-962c-63463c38c5cc",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "points": {
+      "name": "points",
+      "columns": {
+        "team_number": {
+          "name": "team_number",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "points_team_number_teams_team_number_fk": {
+          "name": "points_team_number_teams_team_number_fk",
+          "tableFrom": "points",
+          "tableTo": "teams",
+          "columnsFrom": [
+            "team_number"
+          ],
+          "columnsTo": [
+            "team_number"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "quiz": {
+      "name": "quiz",
+      "columns": {
+        "quiz_number": {
+          "name": "quiz_number",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "quiz_json": {
+          "name": "quiz_json",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "teams": {
+      "name": "teams",
+      "columns": {
+        "team_number": {
+          "name": "team_number",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "team_password": {
+          "name": "team_password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    }
+  },
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  }
+}
