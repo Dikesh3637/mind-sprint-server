@@ -7,7 +7,7 @@
       "To perform mathematical calculations",
       "To declare variables"
     ],
-    "answer": 1
+    "answer": 2
   },
   {
     "question": "Which of the following is a correct way to declare an integer variable in C?",
@@ -17,7 +17,7 @@
       "int num;",
       "num = 10;"
     ],
-    "answer": 1
+    "answer": 3
   },
   {
     "question": "What does the 'scanf' function do in C programming?",
@@ -26,6 +26,79 @@
       "Reads input from the user",
       "Performs arithmetic operations",
       "Declares variables"
+    ],
+    "answer": 2
+  },
+  {
+    "question": "Which data type is used to store whole numbers in C?",
+    "options": ["int", "float", "char", "double"],
+    "answer": 1
+  },
+  {
+    "question": "What is the purpose of the 'sizeof' operator in C?",
+    "options": [
+      "To calculate the size of a variable in bytes",
+      "To perform mathematical calculations",
+      "To find the length of a string",
+      "To declare a new variable"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "In C, what is the purpose of the 'do-while' loop?",
+    "options": [
+      "To execute a block of code repeatedly as long as a condition is true",
+      "To define a function",
+      "To declare variables",
+      "To read input from the user"
+    ],
+    "answer": 1
+  },
+  {
+    "question": "Which standard library function is used to allocate dynamic memory in C?",
+    "options": ["malloc", "calloc", "realloc", "free"],
+    "answer": 3
+  },
+  {
+    "question": "Guess the person",
+    "options": [
+      "Virat Kohli",
+      "Gautam Gambhir",
+      "Arjun Tendulkar",
+      "Narendra Modi"
+    ],
+    "answer": 1,
+    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Virat_Kohli_with_AudiQ7.png/169px-Virat_Kohli_with_AudiQ7.png"
+  },
+  {
+    "question": "Which C keyword is used to define a constant?",
+    "options": ["const", "constant", "define", "final"],
+    "answer": 1
+  },
+  {
+    "question": "Who invented this device?",
+    "options": ["Martin Cooper", "Cartin Mooper", "Steve Jobs", "Jteve Sobs"],
+    "answer": 1,
+    "img": "https://upload.wikimedia.org/wikipedia/commons/8/8d/Mobile_Phone_Evolution_1992_-_2014.jpg"
+  },
+  {
+    "question": "Which App is this",
+    "options": ["Tinder", "Binder", "Cinder", "Tiinder"],
+    "answer": 1,
+    "img": "https://tinder.com/static/tinder.png"
+  },
+  {
+    "question": "Which escape sequence is used to represent a newline character in C strings?",
+    "options": ["\\n", "\\r", "\\t", "\\a"],
+    "answer": 1
+  },
+  {
+    "question": "What is the purpose of the 'typedef' keyword in C?",
+    "options": [
+      "To define a new data type",
+      "To declare a variable",
+      "To include a header file",
+      "To perform mathematical calculations"
     ],
     "answer": 1
   }

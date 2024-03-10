@@ -94,6 +94,11 @@ io.of("/admin-dash").on("connection", (adminSocket) => {
     callback(answers);
   });
 
+  adminSocket.on("quiz-ended", () => {
+    io.of("/").to(`${process.env.QUIZ_CODE}`).emit("quiz-ended");
+    presentParticipants = [];
+  });
+
   adminSocket.on("setAnswerMutex", (data) => {
     answerMutex = data;
   });
