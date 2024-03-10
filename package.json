@@ -8,7 +8,7 @@
     "dev": "tsx watch src/index.ts",
     "generate": "npx drizzle-kit generate:sqlite",
     "migrate": "npx drizzle-kit push:sqlite",
-    "start": "node src/dist/index.js"
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
