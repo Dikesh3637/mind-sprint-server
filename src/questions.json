@@ -68,12 +68,7 @@
       "Narendra Modi"
     ],
     "answer": 1,
-    "img": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Virat_Kohli_with_AudiQ7.png/169px-Virat_Kohli_with_AudiQ7.png"
-  },
-  {
-    "question": "Which C keyword is used to define a constant?",
-    "options": ["const", "constant", "define", "final"],
-    "answer": 1
+    "img": "https://media.gettyimages.com/id/1472909629/photo/ahmedabad-india-virat-kohli-of-india-celebrates-after-scoring-his-century-during-day-four-of.jpg?s=612x612&w=0&k=20&c=FRS6QUbu-RZ8UMBYe0iU2UINh0aS1oKx77YY0JjyU5k="
   },
   {
     "question": "Who invented this device?",
@@ -86,20 +81,5 @@
     "options": ["Tinder", "Binder", "Cinder", "Tiinder"],
     "answer": 1,
     "img": "https://tinder.com/static/tinder.png"
-  },
-  {
-    "question": "Which escape sequence is used to represent a newline character in C strings?",
-    "options": ["\\n", "\\r", "\\t", "\\a"],
-    "answer": 1
-  },
-  {
-    "question": "What is the purpose of the 'typedef' keyword in C?",
-    "options": [
-      "To define a new data type",
-      "To declare a variable",
-      "To include a header file",
-      "To perform mathematical calculations"
-    ],
-    "answer": 1
   }
 ]
