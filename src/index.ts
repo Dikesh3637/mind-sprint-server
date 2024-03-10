@@ -23,7 +23,7 @@ const io = new Server(server, {
   },
 });
 
-app.get("/", (req, res) => {
+app.use("/", (req, res) => {
   res.send("the backend server is running");
 });
 
