@@ -23,6 +23,10 @@ const io = new Server(server, {
   },
 });
 
+app.get("/", (req, res) => {
+  res.send("the backend server is running");
+});
+
 const port = process.env.PORT || 3000;
 
 let presentParticipants: string[] = [];
