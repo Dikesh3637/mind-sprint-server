@@ -29,7 +29,7 @@ app.use("/", (req, res) => {
 
 const port = process.env.PORT || 3000;
 
-let presentParticipants: number[] = [];
+let presentParticipants: string[] = [];
 
 let answerMutex = false;
 
@@ -154,6 +154,7 @@ io.on("connection", (socket) => {
     let parse = teamSchema.safeParse(team);
 
     if (!parse.success) {
+      console.log("invaild input info");
       callback({ authFlag: false });
       return;
     }
@@ -164,13 +165,14 @@ io.on("connection", (socket) => {
       data.teamPassword === validTeam[0].teamPassword &&
       data.teamId === validTeam[0].teamNumber
     ) {
-      if (!presentParticipants.includes(validTeam[0].teamNumber)) {
-        presentParticipants.push(validTeam[0].teamNumber);
+      if (!presentParticipants.includes(`${validTeam[0].teamNumber}`)) {
+        presentParticipants.push(`${validTeam[0].teamNumber}`);
         socket.join(`${process.env.QUIZ_CODE}`);
       } else {
         callback({
           authFlag: false,
         });
+        return;
       }
       io.of("admin-dash").emit("participantListUpdate", presentParticipants);
       callback({
