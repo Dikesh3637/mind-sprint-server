@@ -150,7 +150,12 @@ io.on("connection", (socket) => {
       teamPassword: data.teamPassword,
     };
 
-    teamSchema.parse(team);
+    let parse = teamSchema.safeParse(team);
+
+    if (!parse.success) {
+      callback({ authFlag: false });
+      return;
+    }
 
     let validTeam = await getTeam(team);
 
