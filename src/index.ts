@@ -122,6 +122,7 @@ io.on("connection", (socket) => {
   socket.on("connectToQuiz", (data) => {
     console.log("connectToQuiz", data);
     if (data.inQuiz === "true") {
+      console.log("request to reconnect approved");
       socket.join(`${process.env.QUIZ_CODE}`);
     }
   });
@@ -160,10 +161,14 @@ io.on("connection", (socket) => {
     let validTeam = await getTeam(team);
 
     if (data.teamPassword === validTeam[0].teamPassword) {
-      socket.join(`${process.env.QUIZ_CODE}`);
-      team.teamId in presentParticipants === false
-        ? presentParticipants.push(`${team.teamId}`)
-        : null;
+      if (!presentParticipants.includes(`${team.teamId}`)) {
+        presentParticipants.push(`${team.teamId}`);
+        socket.join(`${process.env.QUIZ_CODE}`);
+      } else {
+        callback({
+          authFlag: false,
+        });
+      }
       io.of("admin-dash").emit("participantListUpdate", presentParticipants);
       callback({
         authFlag: true,
