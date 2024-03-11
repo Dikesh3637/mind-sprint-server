@@ -147,7 +147,7 @@ io.on("connection", (socket) => {
   // Auth
   socket.on("auth-team", async (data, callback) => {
     let team: teamDataType = {
-      teamId: parseInt(data.teamId),
+      teamId: data.teamId,
       teamPassword: data.teamPassword,
     };
 
@@ -160,7 +160,10 @@ io.on("connection", (socket) => {
 
     let validTeam = await getTeam(team);
 
-    if (data.teamPassword === validTeam[0].teamPassword) {
+    if (
+      data.teamPassword === validTeam[0].teamPassword &&
+      data.teamId === validTeam[0].teamNumber
+    ) {
       if (!presentParticipants.includes(`${team.teamId}`)) {
         presentParticipants.push(`${team.teamId}`);
         socket.join(`${process.env.QUIZ_CODE}`);
