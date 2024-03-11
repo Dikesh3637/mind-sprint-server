@@ -29,7 +29,7 @@ app.use("/", (req, res) => {
 
 const port = process.env.PORT || 3000;
 
-let presentParticipants: string[] = [];
+let presentParticipants: number[] = [];
 
 let answerMutex = false;
 
@@ -164,8 +164,8 @@ io.on("connection", (socket) => {
       data.teamPassword === validTeam[0].teamPassword &&
       data.teamId === validTeam[0].teamNumber
     ) {
-      if (!presentParticipants.includes(`${validTeam[0].teamNumber}`)) {
-        presentParticipants.push(`${validTeam[0].teamNumber}`);
+      if (!presentParticipants.includes(validTeam[0].teamNumber)) {
+        presentParticipants.push(validTeam[0].teamNumber);
         socket.join(`${process.env.QUIZ_CODE}`);
       } else {
         callback({
