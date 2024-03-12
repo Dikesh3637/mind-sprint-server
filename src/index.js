@@ -20,6 +20,7 @@ const utilFunction_js_1 = require("./db/utilFunction.js");
 const types_js_1 = require("./zod/types.js");
 require("dotenv/config");
 const getQuestions_js_1 = require("./utils/getQuestions.js");
+const redis_1 = require("redis");
 const app = (0, express_1.default)();
 const server = (0, http_1.createServer)(app);
 const io = new socket_io_1.Server(server, {
@@ -29,19 +30,31 @@ const io = new socket_io_1.Server(server, {
         allowedHeaders: ["my-custom-header"],
         credentials: true,
     },
+    connectionStateRecovery: {
+        // default values
+        maxDisconnectionDuration: 2 * 60 * 1000,
+        skipMiddlewares: true,
+    },
 });
-app.use("/", (req, res) => {
-    res.send("the backend server is running");
+const url = `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
+const redisClient = (0, redis_1.createClient)({
+    password: process.env.REDIS_PASSWORD,
+    url: url,
 });
+redisClient.connect().catch(console.error);
+redisClient.on("error", (err) => console.log("Redis error: ", err.message));
+redisClient.on("connect", () => console.log("Connected to Redis server"));
 const port = process.env.PORT || 3000;
 let presentParticipants = [];
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    presentParticipants = yield redisClient.lRange(`presentParticipants`, 0, -1);
+}))();
 let answerMutex = false;
 let currentQuestion = 0;
 let answers = [];
 let questionList;
 (() => __awaiter(void 0, void 0, void 0, function* () {
     questionList = yield (0, getQuestions_js_1.getQuestion)();
-    console.log(questionList);
 }))();
 // Serve static files from the "public" directory
 // app.use(express.static("public"));
@@ -89,7 +102,7 @@ io.of("/admin-dash").on("connection", (adminSocket) => {
     });
     adminSocket.on("quiz-ended", () => {
         io.of("/").to(`${process.env.QUIZ_CODE}`).emit("quiz-ended");
-        presentParticipants = [];
+        redisClient.del("presentParticipants").catch(console.error);
     });
     adminSocket.on("setAnswerMutex", (data) => {
         answerMutex = data;
@@ -141,10 +154,13 @@ io.on("connection", (socket) => {
             return;
         }
         let validTeam = yield (0, utilFunction_js_1.getTeam)(team);
+        let presentParticipants = yield redisClient.lRange(`presentParticipants`, 0, -1);
         if (data.teamPassword === validTeam[0].teamPassword &&
             data.teamId === validTeam[0].teamNumber) {
             if (!presentParticipants.includes(`${validTeam[0].teamNumber}`)) {
-                presentParticipants.push(`${validTeam[0].teamNumber}`);
+                yield redisClient.rPush(`presentParticipants`, `${validTeam[0].teamNumber}`);
+                presentParticipants = yield redisClient.lRange(`presentParticipants`, 0, -1);
+                console.log("present participants", presentParticipants);
                 socket.join(`${process.env.QUIZ_CODE}`);
             }
             else {
@@ -165,15 +181,16 @@ io.on("connection", (socket) => {
         }
     }));
     //cancel-quiz
-    socket.on("cancel-quiz", () => {
+    socket.on("cancel-quiz", () => __awaiter(void 0, void 0, void 0, function* () {
         console.log("emitted cancel event");
-        presentParticipants = [];
+        yield redisClient.del(`presentParticipants`);
         socket.broadcast.to(`${process.env.QUIZ_CODE}`).emit("cancel-quiz");
-    });
+    }));
     // Emit the list of participants
-    socket.on("participant:list", (data, callback) => {
+    socket.on("participant:list", (data, callback) => __awaiter(void 0, void 0, void 0, function* () {
+        let presentParticipants = yield redisClient.lRange(`presentParticipants`, 0, -1);
         callback(presentParticipants);
-    });
+    }));
     //start quiz
     socket.on("start-quiz", () => {
         socket.broadcast.to(`${process.env.QUIZ_CODE}`).emit("start-quiz");

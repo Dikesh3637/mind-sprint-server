@@ -11,6 +11,7 @@ import {
 } from "./zod/types.js";
 import "dotenv/config";
 import { getQuestion } from "./utils/getQuestions.js";
+import { createClient } from "redis";
 
 const app = express();
 const server = createServer(app);
@@ -21,15 +22,32 @@ const io = new Server(server, {
     allowedHeaders: ["my-custom-header"],
     credentials: true,
   },
+  connectionStateRecovery: {
+    // default values
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    skipMiddlewares: true,
+  },
 });
 
-app.use("/", (req, res) => {
-  res.send("the backend server is running");
+const url = `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`;
+const redisClient = createClient({
+  password: process.env.REDIS_PASSWORD,
+  url: url,
 });
+
+redisClient.connect().catch(console.error);
+
+redisClient.on("error", (err) => console.log("Redis error: ", err.message));
+
+redisClient.on("connect", () => console.log("Connected to Redis server"));
 
 const port = process.env.PORT || 3000;
 
-let presentParticipants: string[] = [];
+let presentParticipants: Array<string> = [];
+
+(async () => {
+  presentParticipants = await redisClient.lRange(`presentParticipants`, 0, -1);
+})();
 
 let answerMutex = false;
 
@@ -41,7 +59,6 @@ let questionList: Array<questionType>;
 
 (async () => {
   questionList = await getQuestion();
-  console.log(questionList);
 })();
 
 // Serve static files from the "public" directory
@@ -96,7 +113,7 @@ io.of("/admin-dash").on("connection", (adminSocket) => {
 
   adminSocket.on("quiz-ended", () => {
     io.of("/").to(`${process.env.QUIZ_CODE}`).emit("quiz-ended");
-    presentParticipants = [];
+    redisClient.del("presentParticipants").catch(console.error);
   });
 
   adminSocket.on("setAnswerMutex", (data) => {
@@ -161,12 +178,28 @@ io.on("connection", (socket) => {
 
     let validTeam = await getTeam(team);
 
+    let presentParticipants = await redisClient.lRange(
+      `presentParticipants`,
+      0,
+      -1
+    );
+
     if (
       data.teamPassword === validTeam[0].teamPassword &&
       data.teamId === validTeam[0].teamNumber
     ) {
       if (!presentParticipants.includes(`${validTeam[0].teamNumber}`)) {
-        presentParticipants.push(`${validTeam[0].teamNumber}`);
+        await redisClient.rPush(
+          `presentParticipants`,
+          `${validTeam[0].teamNumber}`
+        );
+        presentParticipants = await redisClient.lRange(
+          `presentParticipants`,
+          0,
+          -1
+        );
+        console.log("present participants", presentParticipants);
+
         socket.join(`${process.env.QUIZ_CODE}`);
       } else {
         callback({
@@ -186,14 +219,19 @@ io.on("connection", (socket) => {
   });
 
   //cancel-quiz
-  socket.on("cancel-quiz", () => {
+  socket.on("cancel-quiz", async () => {
     console.log("emitted cancel event");
-    presentParticipants = [];
+    await redisClient.del(`presentParticipants`);
     socket.broadcast.to(`${process.env.QUIZ_CODE}`).emit("cancel-quiz");
   });
 
   // Emit the list of participants
-  socket.on("participant:list", (data, callback) => {
+  socket.on("participant:list", async (data, callback) => {
+    let presentParticipants = await redisClient.lRange(
+      `presentParticipants`,
+      0,
+      -1
+    );
     callback(presentParticipants);
   });
 
