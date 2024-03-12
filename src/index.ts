@@ -119,7 +119,7 @@ io.on("connection", (socket) => {
   console.log("A user connected");
 
   //joining socket if already in quiz
-  socket.on("connectToQuiz", (data) => {
+  socket.on("connectToQuiz", (data, callback) => {
     console.log("connectToQuiz", data);
     if (data.inQuiz === "true") {
       console.log("request to reconnect approved");

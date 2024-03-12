@@ -30,6 +30,9 @@ const io = new socket_io_1.Server(server, {
         credentials: true,
     },
 });
+app.use("/", (req, res) => {
+    res.send("the backend server is running");
+});
 const port = process.env.PORT || 3000;
 let presentParticipants = [];
 let answerMutex = false;
@@ -84,6 +87,10 @@ io.of("/admin-dash").on("connection", (adminSocket) => {
     adminSocket.on("getLeaderBoard", (data, callback) => {
         callback(answers);
     });
+    adminSocket.on("quiz-ended", () => {
+        io.of("/").to(`${process.env.QUIZ_CODE}`).emit("quiz-ended");
+        presentParticipants = [];
+    });
     adminSocket.on("setAnswerMutex", (data) => {
         answerMutex = data;
     });
@@ -100,9 +107,10 @@ io.of("/admin-dash").on("connection", (adminSocket) => {
 io.on("connection", (socket) => {
     console.log("A user connected");
     //joining socket if already in quiz
-    socket.on("connectToQuiz", (data) => {
+    socket.on("connectToQuiz", (data, callback) => {
         console.log("connectToQuiz", data);
         if (data.inQuiz === "true") {
+            console.log("request to reconnect approved");
             socket.join(`${process.env.QUIZ_CODE}`);
         }
     });
@@ -123,16 +131,28 @@ io.on("connection", (socket) => {
     // Auth
     socket.on("auth-team", (data, callback) => __awaiter(void 0, void 0, void 0, function* () {
         let team = {
-            teamId: parseInt(data.teamId),
+            teamId: data.teamId,
             teamPassword: data.teamPassword,
         };
-        types_js_1.teamSchema.parse(team);
+        let parse = types_js_1.teamSchema.safeParse(team);
+        if (!parse.success) {
+            console.log("invaild input info");
+            callback({ authFlag: false });
+            return;
+        }
         let validTeam = yield (0, utilFunction_js_1.getTeam)(team);
-        if (data.teamPassword === validTeam[0].teamPassword) {
-            socket.join(`${process.env.QUIZ_CODE}`);
-            team.teamId in presentParticipants === false
-                ? presentParticipants.push(`${team.teamId}`)
-                : null;
+        if (data.teamPassword === validTeam[0].teamPassword &&
+            data.teamId === validTeam[0].teamNumber) {
+            if (!presentParticipants.includes(`${validTeam[0].teamNumber}`)) {
+                presentParticipants.push(`${validTeam[0].teamNumber}`);
+                socket.join(`${process.env.QUIZ_CODE}`);
+            }
+            else {
+                callback({
+                    authFlag: false,
+                });
+                return;
+            }
             io.of("admin-dash").emit("participantListUpdate", presentParticipants);
             callback({
                 authFlag: true,
