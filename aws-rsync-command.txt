@@ -1,5 +1,5 @@
 rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.env' \
--e "ssh -i ~/.ssh/mumbai-dikesh.pem" \
-. ubuntu@ec2-65-1-112-230.ap-south-1.compute.amazonaws.com:~/app
+-e "ssh -i ~/.ssh/mindsprint-mumbai.pem" \
+. ubuntu@ec2-13-232-61-112.ap-south-1.compute.amazonaws.com:~/app
 
-ssh -i "mumbai-dikesh.pem" ubuntu@ec2-65-1-112-230.ap-south-1.compute.amazonaws.com
+ssh -i "mindsprint-mumbai.pem" ubuntu@ec2-13-232-61-112.ap-south-1.compute.amazonaws.com
